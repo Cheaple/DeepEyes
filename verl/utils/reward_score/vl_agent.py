@@ -14,17 +14,17 @@ openai_api_base_list = [
 ]
 
 client_list = []
-for api_base in openai_api_base_list:
-    client = OpenAI(
-        api_key=openai_api_key,
-        base_url=api_base,
-    )
-    client_list.append(client)
+# for api_base in openai_api_base_list:
+#     client = OpenAI(
+#         api_key=openai_api_key,
+#         base_url=api_base,
+#     )
+#     client_list.append(client)
 model_name_list = []
-for client in client_list:
-    response = requests.get(f"{api_base}/models")
-    models = response.json()
-    model_name_list.append(models['data'][0]['id'])
+# for client in client_list:
+#     response = requests.get(f"{api_base}/models")
+#     models = response.json()
+#     model_name_list.append(models['data'][0]['id'])
 
 
 
@@ -305,36 +305,38 @@ def compute_common_reasoning(predict_str: str, ground_truth: str, extra_info=Non
         is_format_error = True
     else:
         question_text = extra_info['question']
-        client_idx = random.randint(0, len(client_list) - 1)
-        client = client_list[client_idx]
-        model_name = model_name_list[client_idx]
-        full_prompt = COMMON_VERIFY_PROMPT.format(
-            query=question_text,
-            gold_ans=ground_truth,
-            pred_ans=answer_text,
-        )
+        # client_idx = random.randint(0, len(client_list) - 1)
+        # client = client_list[client_idx]
+        # model_name = model_name_list[client_idx]
+        # full_prompt = COMMON_VERIFY_PROMPT.format(
+        #     query=question_text,
+        #     gold_ans=ground_truth,
+        #     pred_ans=answer_text,
+        # )
 
         acc_reward = 0.0
-        for ix in range(8):
-            chat_response = client.chat.completions.create(
-                model=model_name,
-                messages=[
-                    {"role": "user", "content": full_prompt},
-                ],
-                seed = random.randint(0, 1000000),
-                temperature=0.5,
-            )
-            response = chat_response.choices[0].message.content.strip()
-            judgement = response.split('## Equivalence Judgement')[-1].lower()
-            if 'true' in judgement and 'false' not in judgement:
-                acc_reward = 1.0
-                break
-            elif 'false' in judgement and 'true' not in judgement:
-                acc_reward = 0.0
-                break
-            else:
-                print(f' [ERROR] judgement format invalid: {judgement}')
-                continue
+        # for ix in range(8):
+        #     chat_response = client.chat.completions.create(
+        #         model=model_name,
+        #         messages=[
+        #             {"role": "user", "content": full_prompt},
+        #         ],
+        #         seed = random.randint(0, 1000000),
+        #         temperature=0.5,
+        #     )
+        #     response = chat_response.choices[0].message.content.strip()
+        #     judgement = response.split('## Equivalence Judgement')[-1].lower()
+        #     if 'true' in judgement and 'false' not in judgement:
+        #         acc_reward = 1.0
+        #         break
+        #     elif 'false' in judgement and 'true' not in judgement:
+        #         acc_reward = 0.0
+        #         break
+        #     else:
+        #         print(f' [ERROR] judgement format invalid: {judgement}')
+        #         continue
+        if answer_text == ground_truth:
+            acc_reward = 1.0
 
     tool_reward_base = 1.0 if count_vision_1 > 0 else 0.0
     tool_reward = 1.0 if count_vision_1 > 0 and acc_reward > 0.5 else 0.0
