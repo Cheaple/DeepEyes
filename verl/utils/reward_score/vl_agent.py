@@ -10,7 +10,7 @@ openai_api_key = "EMPTY"
 openai_api_base_list = [
     # "http://172.30.52.123:8000/v1",
     # "http://10.39.3.123:18901/v1",
-    os.environ.get("LLM_AS_A_JUDGE_BASE", "http://10.39.3.123:18901/v1"),
+    os.environ.get("LLM_AS_A_JUDGE_BASE", "http://0.0.0.0:18901/v1"),
 ]
 
 client_list = []
@@ -277,6 +277,7 @@ def compute_score(predict_str: str, ground_truth: str, extra_info=None) -> float
 
 
 def compute_common_reasoning(predict_str: str, ground_truth: str, extra_info=None) -> float:
+    print(f' [DEBUG] predict_str={predict_str}, ground_truth={ground_truth}')
     is_format_error = False
     # predict_str = "<think>" + predict_str
     count_think_1 = predict_str.count("<think>")
